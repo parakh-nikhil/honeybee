@@ -35,13 +35,21 @@ def downsize_to_youtube_thumbnail(imageToResize):
     downsizedImage = cv2.resize(imageToResize, dim, interpolation = cv2.INTER_AREA)
     return downsizedImage
 
+def add_text_to_img_using_custom_font(textConfig, fontPath, image):
+    font_bebas = ImageFont.truetype(fontPath, int(CUSTOM_FONT_SCALE_FACTOR * imageHeight))
+    img_pil = Image.fromarray(image)
+    draw = ImageDraw.Draw(img_pil)
+    draw.text(textConfig.getOrg(),  textConfig.getVal(), font = font_bebas, fill = textConfig.getColor())
+    img = np.array(img_pil)
+    return img
+
 if __name__ == "__main__":
     images = ["sunflower.jpg",  "Little_Joys.jpeg"]
     imageName = images[1]
     imagePath = getImagePath(imageName)
     image = cv2.imread(imagePath)
    
-    window_name = imageName
+    window_name = imageName.split(".")[0] if "." in imageName else imageName
 
     image = downsize_to_youtube_thumbnail(image)
     dimensions = image.shape
@@ -58,19 +66,11 @@ if __name__ == "__main__":
     lineType = cv2.LINE_AA
     title_white = Text(val, font, fontScale, org, color_white, thickness, lineType)
     
-    # imageWithText = cv2.putText(image, title_white.getVal(), title_white.getOrg(), title_white.getFont(), title_white.getFontScale(), title_white.getColor(), title_white.getThickness(), title_white.getLineType())
-
-
     #--------------------------Custom Font--------------------------------
     fontPath = getFontPath("bebas/Bebas-Regular.ttf")
-    font_bebas = ImageFont.truetype(fontPath, int(CUSTOM_FONT_SCALE_FACTOR * imageHeight))
-    img_pil = Image.fromarray(image)
-    draw = ImageDraw.Draw(img_pil)
-    draw.text(title_white.getOrg(),  title_white.getVal(), font = font_bebas, fill = title_white.getColor())
-    img = np.array(img_pil)
+    img = add_text_to_img_using_custom_font(title_white, fontPath, image)
     #---------------------------------------------------------------------
 
-
     cv2.imshow(window_name, img)
-    cv2.waitKey()
+    cv2.waitKey(10000) #waits 10 seconds before closing
     cv2.destroyAllWindows()
