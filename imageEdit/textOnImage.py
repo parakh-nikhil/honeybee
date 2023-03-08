@@ -3,10 +3,29 @@ from Text import Text
 
 
 BASEPATH = "./assets/baseImage/"
-
+ALPHA = 0.7
+FONT_SCALE_FACTOR = (5/720)
+FONT_THICKNESS_FACTOR = (20/720)
 
 def getImagePath(imageName):
     return BASEPATH+imageName
+
+def downsize_to_youtube_thumbnail(imageToResize):
+    oldDimensions = imageToResize.shape
+    width = 1280
+    height = 720
+    minWidth = 640
+   
+    if(oldDimensions[0] < height):
+        height = oldDimensions[0]
+
+    if(oldDimensions[1] < width and oldDimensions[1]>minWidth):
+        width = oldDimensions[1]
+
+    dim = (width, height)
+   
+    downsizedImage = cv2.resize(imageToResize, dim, interpolation = cv2.INTER_AREA)
+    return downsizedImage
 
 if __name__ == "__main__":
     imageName = "sunflower.jpg"
@@ -16,9 +35,11 @@ if __name__ == "__main__":
    
     window_name = imageName
 
+    image = downsize_to_youtube_thumbnail(image)
     dimensions = image.shape
     imageHeight, imageWidth, _= dimensions
-    print("image1 size: ", imageHeight)
+    print(imageHeight)
+    print(imageWidth)
     
     # #------------image2--------------
     # imageName2 = "Little_Joys.jpeg"
@@ -26,17 +47,17 @@ if __name__ == "__main__":
     # image2Dimensions = image2.shape
     # print("image2 size: ", image2Dimensions[0])
     #  #---------------------------------
-  
 
 
     #Title Val
     val = "HELLO"
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    fontScale = 5 if imageHeight < 1000 else 50
-    org = (int(imageHeight/2), int(imageWidth/2))
+    # font = cv2.FONT_HERSHEY_SIMPLEX
+    font = cv2.FONT_HERSHEY_SCRIPT_COMPLEX
+    fontScale = FONT_SCALE_FACTOR * imageHeight
     color_white = (255, 255, 255)
     color_black = (0,0,0)
-    thickness = 20 if imageHeight < 1000 else 75
+    thickness = int(FONT_THICKNESS_FACTOR * imageHeight * ALPHA)
+    org= (int(imageWidth*ALPHA/2),int(imageHeight/2))
     lineType = cv2.LINE_AA
     title_white = Text(val, font, fontScale, org, color_white, thickness, lineType)
 
