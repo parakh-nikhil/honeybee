@@ -9,7 +9,7 @@ IMAGES_BASEPATH = ASSETS_PATH+"baseImage/"
 FONTS_BASEPATH = ASSETS_PATH+"fonts/"
 ALPHA = 0.6
 FONT_SCALE_FACTOR = (2/720)
-CUSTOM_FONT_SCALE_FACTOR = (100/720)
+CUSTOM_FONT_SCALE_FACTOR = (75/720)
 FONT_THICKNESS_FACTOR = (5/720)
 
 def getImagePath(imageName):
@@ -39,13 +39,25 @@ def add_text_to_img_using_custom_font(textConfig, fontPath, image):
     font_bebas = ImageFont.truetype(fontPath, int(CUSTOM_FONT_SCALE_FACTOR * imageHeight))
     img_pil = Image.fromarray(image)
     draw = ImageDraw.Draw(img_pil)
-    draw.text(textConfig.getOrg(),  textConfig.getVal(), font = font_bebas, fill = textConfig.getColor())
+    draw.text(textConfig.getOrg(),  textConfig.getVal(), font = font_bebas,fill = textConfig.getColor())
+
+    img = np.array(img_pil)
+    return img
+
+def add_text_to_img_using_custom_font_with_shadow(textConfig, fontPath, image, shadow_color):
+    space = 0
+    font_bebas = ImageFont.truetype(fontPath, int(CUSTOM_FONT_SCALE_FACTOR * imageHeight))
+    img_pil = Image.fromarray(image)
+    draw = ImageDraw.Draw(img_pil)
+    draw.text(textConfig.getOrg(),  textConfig.getVal(), font = font_bebas, stroke_width = 5, spacing = space, fill = shadow_color)
+    draw.text(textConfig.getOrg(),  textConfig.getVal(), font = font_bebas, stroke_width = 1, spacing = space, fill = textConfig.getColor())
+
     img = np.array(img_pil)
     return img
 
 if __name__ == "__main__":
     images = ["sunflower.jpg",  "Little_Joys.jpeg"]
-    imageName = images[1]
+    imageName = images[0]
     imagePath = getImagePath(imageName)
     image = cv2.imread(imagePath)
    
@@ -55,8 +67,8 @@ if __name__ == "__main__":
     dimensions = image.shape
     imageHeight,imageWidth,_= dimensions
 
-    #Title
-    val = "HELLO TO THIS WORLD"
+   #--------------------------Title--------------------------------
+    val = "You generated this thumbnail"
     font = cv2.FONT_HERSHEY_TRIPLEX
     fontScale = FONT_SCALE_FACTOR * imageHeight
     color_white = (255, 255, 255)
@@ -65,10 +77,14 @@ if __name__ == "__main__":
     org= (int(imageWidth*ALPHA/4),int(imageHeight/2 * ALPHA))
     lineType = cv2.LINE_AA
     title_white = Text(val, font, fontScale, org, color_white, thickness, lineType)
-    
+    #---------------------------------------------------------------------
+
+
+
     #--------------------------Custom Font--------------------------------
     fontPath = getFontPath("bebas/Bebas-Regular.ttf")
-    img = add_text_to_img_using_custom_font(title_white, fontPath, image)
+    # img = add_text_to_img_using_custom_font(title_white, fontPath, image)
+    img = add_text_to_img_using_custom_font_with_shadow(title_white, fontPath, image, (0,0,0))
     #---------------------------------------------------------------------
 
     cv2.imshow(window_name, img)
